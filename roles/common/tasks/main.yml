@@ -1,0 +1,22 @@
+---
+# Below are all the tasks that should be completed on all nodes
+
+# TODO:
+#  - Add ntp.d installation and configuration
+
+- name: Update all exisiting packages to latest version
+  apt: upgrade=dist
+
+- name: Install Fail2Ban for security purposes
+  apt: pkg=fail2ban state=latest
+  sudo: yes
+
+- name: Install base packages
+  apt: name={{ item }} force=yes state=installed
+  with_items:
+    - build-essential
+    - software-properties-common
+    - htop
+    - git
+    - curl
+  tags: packages

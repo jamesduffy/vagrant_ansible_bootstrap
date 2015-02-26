@@ -1,0 +1,35 @@
+- name: Add Nginx Repository
+  apt_repository: repo='ppa:nginx/stable' state=present
+  register: ppastable
+
+- name: Install Nginx
+  apt: pkg=nginx state=installed update_cache=true
+  when: ppastable|success
+  register: nginxinstalled
+  notify:
+    - Start Nginx
+
+- name: Disable Default Site
+  when: nginxinstalled|success
+  file: dest=/etc/nginx/sites-enabled/default state=absent
+  notify: Reload Nginx
+
+- name: Add Configuration for each domain
+  template: src={{ item }}.j2 dest=/etc/nginx/sites-available/{{ item }} owner=root group=root
+  when: nginxinstalled|success
+  register: domainconfig
+  with_items: domains
+
+- name: Enable each domain
+  when: domainconfig|success
+  file: src=/etc/nginx/sites-available/{{ item }} dest=/etc/nginx/sites-enabled/{{ item }} state=link
+  with_items: domains
+  notify:
+    - Reload Nginx
+
+#- name: Create Web root
+#  when: nginxinstalled|success
+#  file: dest=/var/www/{{ item }}/public mode=775 state=directory owner=www-data group=www-data
+#  with_items: domains
+#  notify:
+#    - Reload Nginx

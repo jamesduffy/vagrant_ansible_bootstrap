@@ -1,0 +1,12 @@
+---
+# This playbook has examples of common applications.
+
+- name: Apply common configuration to all nodes
+  hosts: all
+  sudo: true
+
+  roles:
+    - common
+    - nginx
+    - php
+    #- rails

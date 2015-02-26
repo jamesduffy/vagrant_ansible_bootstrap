@@ -1,0 +1,12 @@
+---
+# Handler to handle common notifications. Handlers are called by other plays.
+# See http://docs.ansible.com/playbooks_intro.html for more information about handlers.
+
+- name: start fail2ban
+  service: name=fail2pan state=started
+
+- name: restart fail2ban
+  service: name=fail2ban state=restarted
+
+- name: restart iptables
+  service: name=iptables state=restarted
